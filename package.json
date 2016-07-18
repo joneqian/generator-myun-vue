@@ -41,7 +41,7 @@
       "mocha": true
     }
   },
-  "repository": "joneqian/generator-myun-vue",
+  "repository": "https://github.com/joneqian/generator-myun-vue",
   "scripts": {
     "prepublish": "gulp prepublish",
     "test": "gulp"
