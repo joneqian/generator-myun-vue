@@ -7,12 +7,6 @@
  * @description
  */
 import Vue from 'vue';
-<% if (includeZepto) { %>
-import $ from 'zepto';<% } %>
-
-<% if (!includeZepto) { %>
-import $ from 'jquery';<% } %>
-
 import indexPage from './index-page'
 
 function ajaxPost (url, data, cb) {
@@ -29,7 +23,7 @@ function ajaxPost (url, data, cb) {
       }
     },
     error: function (xhr, errorType, error) {
-      console.error(url + ' error: ' + errorType + '##' + error);
+      console.log(url + ' error: ' + errorType + '##' + error);
       cb('服务异常', null)
     }
   })
@@ -38,7 +32,6 @@ function ajaxPost (url, data, cb) {
 var vm = new Vue({
   el: 'body',
   data: {
-    msg: 'hello world!'
   },
   components: {
     indexPage
@@ -56,11 +49,7 @@ var vm = new Vue({
 });
 
 function initPage () {
-  $(document).on('pageInit', '#send-red-envelope', function (e, pageId, page) {
-    ajaxPost('url', null, function (data) {
-      vm.msg = 'hello world!'
-    })
-  });
+  $(function () {
 
-  $.init();
+  });
 }

@@ -42,12 +42,6 @@ module.exports = yeoman.Base.extend({
           type: 'input',
           name: 'version',
           message: 'Enter project version'
-        },
-        {
-          type: 'confirm',
-          name: 'includeZepto',
-          message: 'Do you want to include zepto(default is jquery)?',
-          default: false
         }
       ];
 
@@ -56,7 +50,6 @@ module.exports = yeoman.Base.extend({
         this.projectDes = answers.description;
         this.projectAuthor = answers.author;
         this.projectVersion = answers.version;
-        this.includeZepto = answers.includeZepto;
 
         done();
       }.bind(this));
@@ -69,8 +62,7 @@ module.exports = yeoman.Base.extend({
         projectName: this.projectName,
         projectDes: this.projectDes,
         projectAuthor: this.projectAuthor,
-        projectVersion: this.projectVersion,
-        includeZepto: this.includeZepto
+        projectVersion: this.projectVersion
       });
     },
     git: function() {
@@ -102,20 +94,20 @@ module.exports = yeoman.Base.extend({
       this._copy('config/prod.env.js', './config/prod.env.js');
     },
     vuefile: function() {
-      this._copyTpl('_index-page.vue', './src/index-page.vue', {
+      this._copyTpl('_index-page.vue', './src/module/index/index-page.vue', {
         includeZepto: this.includeZepto
       });
 
-      this._copyTpl('_index.js', './src/index.js', {
+      this._copyTpl('_index.js', './src/module/index/index.js', {
         includeZepto: this.includeZepto
       });
     },
     css: function() {
-      this._copy('_index.css', './src/index.css');
+      this._copy('_index.css', './src/module/index/index.css');
     },
     html: function() {
-      this._copy('_index.html', './src/index.html');
-      this._copy('_error.html', './src/error.html');
+      this._copy('_index.html', './src/module/index/index.html');
+      this._copy('_error.html', './src/module/error/error.html');
     },
     route: function() {
       mkdirp(this.destinationPath('./routes'));
@@ -126,6 +118,7 @@ module.exports = yeoman.Base.extend({
       this._copy('bin/www', './bin/www');
     },
     misc: function() {
+      mkdirp(this.destinationPath('./src/css'));
       mkdirp(this.destinationPath('./src/components'));
       mkdirp(this.destinationPath('./src/images'));
       mkdirp(this.destinationPath('./static'));

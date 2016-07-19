@@ -1,28 +1,27 @@
 var path = require('path');
 var config = require('../config');
-var utils = require('./utils');
 var webpack = require('webpack');
 var merge = require('webpack-merge');
 var baseWebpackConfig = require('./webpack.base.conf');
+var cssLoaders = require('./utils');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
-var env = process.env.NODE_ENV === 'testing' ? require('../config/test.env') : config.build.env;
 
-var webpackConfig = merge(baseWebpackConfig, {
-  module: {
-    loaders: utils.styleLoaders({
-      sourceMap: config.build.productionSourceMap,
-      extract: true
-    })
-  },
+const debug = process.env.NODE_ENV !== 'production';
+var glob = require('glob');
+
+var entries = getEntry('./src/module/**/*.js'); // 获得入口js文件
+var chunks = Object.keys(entries);
+
+module.exports = merge(baseWebpackConfig, {
   devtool: config.build.productionSourceMap ? '#source-map' : false,
   output: {
     path: config.build.assetsRoot,
-    filename: utils.assetsPath('js/[name].[chunkhash].js'),
-    chunkFilename: utils.assetsPath('js/[id].[chunkhash].js')
+    filename: path.join(config.build.assetsSubDirectory, '[name].bundle.js'),
+    chunkFilename: path.join(config.build.assetsSubDirectory, '[id].bundle.js')
   },
   vue: {
-    loaders: utils.cssLoaders({
+    loaders: cssLoaders({
       sourceMap: config.build.productionSourceMap,
       extract: true
     })
@@ -30,7 +29,9 @@ var webpackConfig = merge(baseWebpackConfig, {
   plugins: [
     // http://vuejs.github.io/vue-loader/workflow/production.html
     new webpack.DefinePlugin({
-      'process.env': env
+      'process.env': {
+        NODE_ENV: '"production"'
+      }
     }),
     new webpack.optimize.UglifyJsPlugin({
       compress: {
@@ -39,63 +40,46 @@ var webpackConfig = merge(baseWebpackConfig, {
     }),
     new webpack.optimize.OccurenceOrderPlugin(),
     // extract css into its own file
-    new ExtractTextPlugin(utils.assetsPath('css/[name].[contenthash].css')),
-    // generate dist index.html with correct asset hash for caching.
-    // you can customize output by editing /index.html
-    // see https://github.com/ampedandwired/html-webpack-plugin
-    new HtmlWebpackPlugin({
-      filename: process.env.NODE_ENV === 'testing' ? 'index.html' : config.build.index,
-      template: './src/index.html',
-      inject: true,
-      minify: {
-        removeComments: true,
-        collapseWhitespace: true,
-        removeAttributeQuotes: true
-          // more options:
-          // https://github.com/kangax/html-minifier#options-quick-reference
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendors', // 将公共模块提取，生成名为`vendors`的chunk
+      chunks: chunks,
+      minChunks: 2 // 提取所有entry共同依赖的模块
+    }),
+    new ExtractTextPlugin(path.join(config.build.assetsSubDirectory, '[name].bundle.css')), //单独使用link标签加载css并设置路径，相对于output配置中的publickPath
+    debug ? function () {
+    } : new webpack.optimize.UglifyJsPlugin({ //压缩代码
+      compress: {
+        warnings: false
       },
-      // necessary to consistently work with multiple chunks via CommonsChunkPlugin
-      chunksSortMode: 'dependency'
-    }),
-    // split vendor js into its own file
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'vendor',
-      minChunks: function(module, count) {
-        // any required modules inside node_modules are extracted to vendor
-        return (
-          module.resource &&
-          /\.js$/.test(module.resource) &&
-          module.resource.indexOf(
-            path.join(__dirname, '../node_modules')
-          ) === 0
-        )
-      }
-    }),
-    // extract webpack runtime and module manifest to its own file in order to
-    // prevent vendor hash from being updated whenever app bundle is updated
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'manifest',
-      chunks: ['vendor']
+      except: ['$super', '$', 'exports', 'require'] //排除关键字
     })
   ]
-})
+});
 
-if (config.build.productionGzip) {
-  var CompressionWebpackPlugin = require('compression-webpack-plugin')
+function getEntry(globPath) {
+  var entries = {},
+    basename, tmp, pathname;
 
-  webpackConfig.plugins.push(
-    new CompressionWebpackPlugin({
-      asset: '[path].gz[query]',
-      algorithm: 'gzip',
-      test: new RegExp(
-        '\\.(' +
-        config.build.productionGzipExtensions.join('|') +
-        ')$'
-      ),
-      threshold: 10240,
-      minRatio: 0.8
-    })
-  )
+  glob.sync(globPath).forEach(function (entry) {
+    basename = path.basename(entry, path.extname(entry));
+    tmp = entry.split('/').splice(-3);
+    pathname = tmp.splice(0, 1) + '/' + basename; // 正确输出js和html的路径
+    entries[pathname] = entry;
+  });
+  return entries;
 }
 
-module.exports = webpackConfig;
+var pages = getEntry('./src/module/**/*.html');
+for (var pathname in pages) {
+  // 配置生成的html文件，定义路径等
+  var conf = {
+    // filename: pathname + '.html',
+    filename: pathname + '.html',
+    template: pages[pathname], // 模板路径
+    inject: 'body',              // js插入位置
+    chunks: ['vendors', pathname],
+    hash: true
+  };
+  // 需要生成几个html文件，就配置几个HtmlWebpackPlugin对象
+  module.exports.plugins.push(new HtmlWebpackPlugin(conf));
+}
