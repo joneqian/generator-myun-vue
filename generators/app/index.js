@@ -17,7 +17,7 @@ module.exports = yeoman.Base.extend({
   prompting: {
     dirname: function () {
       this.log(yosay(
-        'Welcome to the myun ' + chalk.red('generator-myun-vue') + ' generator!'
+        'Welcome to the myun ' + chalk.red('generator-myun-vue ') + chalk.blue(this.pkg.version) + ' generator!'
       ));
 
       var done = this.async();
