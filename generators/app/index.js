@@ -65,27 +65,31 @@ module.exports = yeoman.Base.extend({
         projectVersion: this.projectVersion
       });
     },
-    git: function() {
-      this._copy('_gitignore', '.gitignore');
-    },
-    eslint: function() {
-      this._copy('_eslintrc', '.eslintrc.js');
-    },
     babel:function(){
       this._copy('_babelrc', '.babelrc');
     },
+    config:function(){
+      this._copy('_config.js', 'config.js');
+    },
     editorconfig:function(){
       this._copy('_editorconfig', '.editorconfig');
+    },
+    eslint: function() {
+      this._copy('_eslintrc.js', '.eslintrc.js');
+    },
+    gitattributes:function(){
+      this._copy('_gitattributes', '.gitattributes');
+    },
+    gitignore: function() {
+      this._copy('_gitignore', '.gitignore');
     },
     webpack: function() {
       mkdirp(this.destinationPath('./build'));
       this._copy('build/build.js', './build/build.js');
       this._copy('build/dev-client.js', './build/dev-client.js');
       this._copy('build/dev-server.js', './build/dev-server.js');
-      this._copy('build/utils.js', './build/utils.js');
-      this._copyTpl('build/webpack.base.conf.js', './build/webpack.base.conf.js',{
-        includeZepto: this.includeZepto
-      });
+      this._copy('build/css-loader.js', './build/css-loader.js');
+      this._copy('build/webpack.base.conf.js', './build/webpack.base.conf.js');
       this._copy('build/webpack.dev.conf.js', './build/webpack.dev.conf.js');
       this._copy('build/webpack.prod.conf.js', './build/webpack.prod.conf.js');
       mkdirp(this.destinationPath('./config'));
@@ -93,21 +97,19 @@ module.exports = yeoman.Base.extend({
       this._copy('config/index.js', './config/index.js');
       this._copy('config/prod.env.js', './config/prod.env.js');
     },
-    vuefile: function() {
-      this._copyTpl('_index-page.vue', './src/module/index/index-page.vue', {
-        includeZepto: this.includeZepto
-      });
-
-      this._copyTpl('_index.js', './src/module/index/index.js', {
-        includeZepto: this.includeZepto
-      });
+    assets: function() {
+      mkdirp(this.destinationPath('./src/assets'));
+      this._copy('src/assets/common.js', './src/assets/common.js');
+      this._copy('src/assets/config.js', './src/assets/config.js');
+      this._copy('src/assets/function.js', './src/assets/function.js');
+      this._copy('src/assets/lib.js', './src/assets/lib.js');
+      this._copy('src/assets/myun.css', './src/assets/myun.css');
+      mkdirp(this.destinationPath('./src/assets/font'));
+      this._copy('src/assets/font/_gitkeep', './src/assets/font/.gitkeep');
     },
-    css: function() {
-      this._copy('_index.css', './src/module/index/index.css');
-    },
-    html: function() {
-      this._copy('_index.html', './src/module/index/index.html');
-      this._copy('_error.html', './src/module/error/error.html');
+    components: function() {
+      mkdirp(this.destinationPath('./src/components'));
+      this._copy('src/components/_gitkeep', './src/components/.gitkeep');
     },
     route: function() {
       mkdirp(this.destinationPath('./routes'));
@@ -116,13 +118,6 @@ module.exports = yeoman.Base.extend({
     bin: function() {
       mkdirp(this.destinationPath('./bin'));
       this._copy('bin/www', './bin/www');
-    },
-    misc: function() {
-      mkdirp(this.destinationPath('./src/css'));
-      mkdirp(this.destinationPath('./src/components'));
-      mkdirp(this.destinationPath('./src/images'));
-      mkdirp(this.destinationPath('./static'));
-      mkdirp(this.destinationPath('./test'));
     },
     app: function () {
       this._copy('_app.js', './app.js');
