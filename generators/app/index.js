@@ -111,6 +111,18 @@ module.exports = yeoman.Base.extend({
       mkdirp(this.destinationPath('./src/components'));
       this._copy('src/components/_gitkeep', './src/components/.gitkeep');
     },
+    module: function() {
+      mkdirp(this.destinationPath('./src/module/index'));
+      this._copy('src/module/index/app.vue', './src/module/index/app.vue');
+      this._copy('src/module/index/index.html', './src/module/index/index.html');
+      this._copy('src/module/index/index.js', './src/module/index/index.js');
+      mkdirp(this.destinationPath('./src/module/error'));
+      this._copy('src/module/error/error.html', './src/module/error/error.html');
+    },
+    static: function() {
+      mkdirp(this.destinationPath('./static'));
+      this._copy('static/_gitkeep', './static/.gitkeep');
+    },
     route: function() {
       mkdirp(this.destinationPath('./routes'));
       this._copy('routes/index.js', './routes/index.js');
