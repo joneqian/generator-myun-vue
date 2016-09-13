@@ -70,7 +70,7 @@ define(function () {
     return newObj;
   };
 
-  var getSearch = function (location) {
+  var getSearch = function () {
     var url = location.search; //获取url中"?"符后的字串
     var searchObj = new Object();
     if (url.indexOf("?") != -1) {

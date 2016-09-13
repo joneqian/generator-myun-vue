@@ -106,6 +106,8 @@ module.exports = yeoman.Base.extend({
       this._copy('src/assets/myun.css', './src/assets/myun.css');
       mkdirp(this.destinationPath('./src/assets/font'));
       this._copy('src/assets/font/_gitkeep', './src/assets/font/.gitkeep');
+      mkdirp(this.destinationPath('./src/assets/images'));
+      this._copy('src/assets/images/_gitkeep', './src/assets/images/.gitkeep');
     },
     components: function() {
       mkdirp(this.destinationPath('./src/components'));
