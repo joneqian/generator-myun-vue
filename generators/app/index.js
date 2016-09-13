@@ -88,7 +88,7 @@ module.exports = yeoman.Base.extend({
       this._copy('build/build.js', './build/build.js');
       this._copy('build/dev-client.js', './build/dev-client.js');
       this._copy('build/dev-server.js', './build/dev-server.js');
-      this._copy('build/css-loader.js', './build/css-loader.js');
+      this._copy('build/css-loaders.js', './build/css-loaders.js');
       this._copy('build/webpack.base.conf.js', './build/webpack.base.conf.js');
       this._copy('build/webpack.dev.conf.js', './build/webpack.dev.conf.js');
       this._copy('build/webpack.prod.conf.js', './build/webpack.prod.conf.js');
