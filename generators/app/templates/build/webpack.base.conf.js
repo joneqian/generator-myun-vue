@@ -83,6 +83,13 @@ module.exports = {
     loaders: cssLoaders()
   },
   plugins: [
+    // 将jquery变成公共模块
+    /*new webpack.ProvidePlugin({
+     $: "jquery",
+     jquery: "jquery",
+     "windows.jQuery": "jquery",
+     jQuery:"jquery"
+     }),*/
     // 提取公共模块
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendors', // 公共模块的名称
