@@ -1,9 +1,9 @@
 /**
  * Created by qianqing on 16/9/9.
  */
-import 'assets/css.css';
-import Conf from 'assets/conf';
-import Common from 'assets/common';
+import './myun.css';
+import Conf from './config';
+import Common from './common';
 
 
 var Lib = {
