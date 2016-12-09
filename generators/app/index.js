@@ -135,6 +135,10 @@ module.exports = yeoman.Base.extend({
     },
     app: function () {
       this._copy('_app.js', './app.js');
+    },
+    log: function () {
+      mkdirp(this.destinationPath('./logs'));
+      this._copy('_logger.js', './logger.js');
     }
   },
   _copy: function(from, to) {
