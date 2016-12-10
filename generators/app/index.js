@@ -41,7 +41,8 @@ module.exports = yeoman.Base.extend({
         {
           type: 'input',
           name: 'version',
-          message: 'Enter project version'
+          message: 'Enter project version',
+          default: 'v0.0.1'
         }
       ];
 
@@ -67,9 +68,6 @@ module.exports = yeoman.Base.extend({
     },
     babel:function(){
       this._copy('_babelrc', '.babelrc');
-    },
-    config:function(){
-      this._copy('_config.js', 'config.js');
     },
     editorconfig:function(){
       this._copy('_editorconfig', '.editorconfig');
@@ -138,6 +136,7 @@ module.exports = yeoman.Base.extend({
     },
     log: function () {
       mkdirp(this.destinationPath('./logs'));
+      this._copy('logs/_gitkeep', './logs/.gitkeep');
       this._copy('_logger.js', './logger.js');
     }
   },
