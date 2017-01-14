@@ -26,7 +26,7 @@ module.exports = yeoman.Base.extend({
       var prompts = [
         {
           type: 'input',
-          name: 'project',
+          name: 'projectName',
           message: 'What is the project\'s name?'
         },
         {
@@ -48,7 +48,7 @@ module.exports = yeoman.Base.extend({
       ];
 
       this.prompt(prompts).then(function (answers) {
-        this.projectName = answers.project;
+        this.projectName = answers.projectName;
         this.projectDes = answers.description;
         this.projectAuthor = answers.author;
         this.projectVersion = answers.version;
