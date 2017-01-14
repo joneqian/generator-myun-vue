@@ -51,7 +51,7 @@ module.exports = yeoman.Base.extend({
         this.projectDes = answers.description;
         this.projectAuthor = answers.author;
         this.projectVersion = answers.version;
-        this.props = props;
+        this.props = answers;
         done();
       }.bind(this));
     }
