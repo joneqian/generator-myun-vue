@@ -1,97 +1,11 @@
 /**
  * Created by qianqing on 16/9/9.
  */
-define(function () {
-  var address = {
-    "p": [{
-      "id": 13,
-      "name": "浙江省"
-    }
-    ],
-    "c": {
-      "13": [{
-        "id": 93,
-        "name": "嘉兴市"
-      }]
-    },
-    "a": {
-      "93": [{
-        "id": 1000,
-        "name": "南湖区"
-      },
-        {
-          "id": 1001,
-          "name": "秀洲区"
-        },
-        {
-          "id": 1002,
-          "name": "嘉善县"
-        },
-        {
-          "id": 1003,
-          "name": "海盐县"
-        },
-        {
-          "id": 1004,
-          "name": "海宁市"
-        },
-        {
-          "id": 1005,
-          "name": "平湖市"
-        },
-        {
-          "id": 1006,
-          "name": "桐乡市"
-        },
-        {
-          "id": 1007,
-          "name": "其它区"
-        }]
-    }
-  };
+import axios from 'axios';
 
-  var clone = function (obj, newObj) {
-    if (!obj) {
-      return null;
-    }
-
-    var  newObj = newObj || {};
-    for (var i in obj) {
-      if (obj[i] === null) {
-        newObj[i] = {};
-      } else if (typeof obj[i] === 'object') {
-        newObj[i] = (obj[i].constructor === Array) ? [] : {};
-        clone(obj[i], newObj[i]);
-      } else {
-        newObj[i] = obj[i];
-      }
-    }
-
-    return newObj;
-  };
-
-  var getSearch = function () {
-    var url = location.search; //获取url中"?"符后的字串
-    var searchObj = new Object();
-    if (url.indexOf("?") != -1) {
-      var str = url.substr(1);
-      var strs = str.split("&");
-      for (var i = 0; i < strs.length; i++) {
-        searchObj[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
-      }
-    }
-    return searchObj;
-  };
-
-  var isWeiXin = function () {
-    var ua = navigator.userAgent.toLowerCase();
-    return ua.indexOf('micromessenger') != -1;
-  };
-
-  // dateFormatFormat(new Date(), "yyyy-MM-dd hh:mm:ss.S") ==> 2006-07-02 08:09:04.423
-  // dateFormatFormat(new Date(), "yyyy-M-d h:m:s.S")      ==> 2006-7-2 8:9:4.18
-  var dateFormat = function (date, fmt) {
-    var o = {
+var fn = {
+  dateFormat(date, fmt) {//时间格式化
+    let o = {
       "M+": date.getMonth() + 1,                 //月份
       "d+": date.getDate(),                    //日
       "h+": date.getHours(),                   //小时
@@ -106,84 +20,73 @@ define(function () {
       if (new RegExp("(" + k + ")").test(fmt))
         fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
     return fmt;
-  };
+  },
+  checkDevice() {//设备检查
+    const ua = navigator.userAgent
+    const isAndroid = /(Android);?[\s\/]+([\d.]+)?/.test(ua)
+    const isIpad = /(iPad).*OS\s([\d_]+)/.test(ua)
+    const isIpod = /(iPod)(.*OS\s([\d_]+))?/.test(ua)
+    const isIphone = !isIpad && /(iPhone\sOS)\s([\d_]+)/.test(ua)
+    const isWechat = /micromessenger/i.test(ua)
 
-  var isPositiveNum = function (s) {//是否为正整数
-    var re = /^[0-9]*[1-9][0-9]*$/;
+    return {
+      isAndroid,
+      isIpad,
+      isIpod,
+      isIphone,
+      isWechat
+    }
+  },
+  checkMobile(phone) {//检查手机号
+    let re = /^1\d{10}$/
+    return re.test(phone);
+  },
+  getSearch() {
+    let url = location.search; //获取url中"?"符后的字串
+    let searchObj = new Object();
+    if (url.indexOf("?") != -1) {
+      var str = url.substr(1);
+      var strs = str.split("&");
+      for (var i = 0; i < strs.length; i++) {
+        searchObj[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+      }
+    }
+    return searchObj;
+  },
+  isPositiveInteger(s) {//是否为正整数
+    let re = /^[0-9]*[1-9][0-9]*$/;
     return re.test(s)
-  };
-
-  var checkMobile = function (s) {
-    var re = /^1\d{10}$/;
-    if (re.test(s)) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  var getPCD = function (provinceName, cityName, districtName) {
-    if (!provinceName || !cityName || !districtName) {
-      callback('Parameter error', null);
-    }
-
-    var i = 0;
-    var pcd = {};
-    var provinces = address['p'];
-    for (i = 0; i < provinces.length; i++) {
-      if (provinces[i].name.indexOf(provinceName) >= 0) {
-        pcd.province = provinces[i];
-        break;
+  },
+  ajax(url, json, method = 'post', timeout = 25000) {
+    var promise = new Promise((resolve, reject) => {
+      if (!url || !json) {
+        reject({status: 0, msg: `url or josn is null`});
       }
-    }
 
-    var cities = address['c'][pcd.province.id + ''];
-    for (i = 0; i < cities.length; i++) {
-      if (cities[i].name.indexOf(cityName) >= 0) {
-        pcd.city = cities[i];
-        break;
-      }
-    }
+      let req = {
+        url: url,
+        method: method,
+        data: json,
+        timeout: timeout,
+        headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
+      };
 
-    var districts = address['a'][pcd.city.id + ''];
-    for (i = 0; i < districts.length; i++) {
-      if (districts[i].name.indexOf(districtName) >= 0) {
-        pcd.district = districts[i];
-        return pcd;
-      }
-    }
-
-    return pcd;
-  };
-
-  var ajaxPost = function (url, data, cb) {
-    $.ajax({
-      type: 'POST',
-      url: url,
-      data: data,
-      timeout: 25000,
-      success: function (data, status, xhr) {
-        if (data.status) {
-          cb(null, data.data);
-        } else {
-          cb(data.msg, null);
-        }
-      },
-      error: function (xhr, errorType, error) {
-        console.error(url + ' error: ' + errorType + '##' + error);
-        cb('服务异常', null);
-      }
+      axios(req)
+        .then((response) => {
+          resolve(response.data);
+        })
+        .catch((error) => {
+          console.error(`ajax error: ${url} ### ${error}`);
+          if (error.message) {
+            reject({status: 0, msg: error.message});
+          } else {
+            reject({status: 0, msg: 'ajax 异常' + url});
+          }
+        });
     });
-  };
 
-  return {
-    getSearch: getSearch,
-    isWeiXin: isWeiXin,
-    dateFormat: dateFormat,
-    isPositiveNum: isPositiveNum,
-    checkMobile: checkMobile,
-    clone: clone,
-    getPCD: getPCD,
-    ajaxPost: ajaxPost
+    return promise;
   }
-});
+};
+
+module.exports = fn;

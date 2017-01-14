@@ -3,11 +3,12 @@
  */
 import './myun.css';
 import Conf from './config';
-import Common from './common';
+import Function from './function';
+import pcdData from './pcd';
 
 
 var Lib = {
-  Conf,Common
+  Conf, Function, pcdData
 };
 
 module.exports = Lib;

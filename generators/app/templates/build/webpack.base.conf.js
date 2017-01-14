@@ -70,7 +70,8 @@ module.exports = {
         loader: 'url',
         query: {
           limit: 10000,
-          name: path.join(config.build.assetsSubDirectory, '[name].[hash:7].[ext]')
+          name: path.join(config.build.assetsSubDirectory, '[name].[hash:7].[ext]')// in linux or mac
+          //name: config.build.assetsSubDirectory + '/[name].[hash:7].[ext]'// in window
         }
       },
       {

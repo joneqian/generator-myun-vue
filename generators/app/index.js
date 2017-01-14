@@ -95,9 +95,16 @@ module.exports = yeoman.Base.extend({
       this._copy('config/index.js', './config/index.js');
       this._copy('config/prod.env.js', './config/prod.env.js');
     },
+    common: function() {
+      mkdirp(this.destinationPath('./common'));
+      this._copy('common/api.conf.js', './common/api.conf.js');
+      this._copy('common/config.js', './common/config.js');
+      this._copy('common/oss.conf.js', './common/oss.conf.js');
+      this._copy('common/wx.conf.js', './common/wx.conf.js');
+    },
     assets: function() {
       mkdirp(this.destinationPath('./src/assets'));
-      this._copy('src/assets/common.js', './src/assets/common.js');
+      this._copy('src/assets/pcd.js', './src/assets/pcd.js');
       this._copy('src/assets/config.js', './src/assets/config.js');
       this._copy('src/assets/function.js', './src/assets/function.js');
       this._copy('src/assets/lib.js', './src/assets/lib.js');
