@@ -13,6 +13,7 @@ module.exports = yeoman.Base.extend({
   },
   initializing: function() {
     this.pkg = require('../../package.json');
+    this.props = {};
   },
   prompting: {
     dirname: function () {
@@ -25,8 +26,7 @@ module.exports = yeoman.Base.extend({
         {
           type: 'input',
           name: 'project',
-          message: 'What is the project\'s name?',
-          default: this.appname
+          message: 'What is the project\'s name?'
         },
         {
           type: 'input',
@@ -51,12 +51,21 @@ module.exports = yeoman.Base.extend({
         this.projectDes = answers.description;
         this.projectAuthor = answers.author;
         this.projectVersion = answers.version;
-
+        this.props = props;
         done();
       }.bind(this));
     }
   },
-
+  defaults: function () {
+    if (path.basename(this.destinationPath()) !== this.props.projectName) {
+      this.log(
+        'Your generator must be inside a folder named ' + this.props.projectName + '\n' +
+        'I\'ll automatically create this folder.'
+      );
+      mkdirp(this.props.projectName);
+      this.destinationRoot(this.destinationPath(this.props.projectName));
+    }
+  },
   writing: {
     packageJson: function () {
       this._copyTpl('_package.json', 'package.json', {
